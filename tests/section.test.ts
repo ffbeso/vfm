@@ -40,6 +40,26 @@ it('Disable section with blockquote heading', () => {
   expect(received).toBe(expected);
 });
 
+it('Disable section with closing hashes', () => {
+  const md = '### Not Sectionize ###';
+  const received = stringify(md, { partial: true });
+  const expected = `
+<h3 id="not-sectionize">Not Sectionize</h3>
+`;
+  expect(received).toBe(expected);
+});
+
+it('Do not disable section with insufficient closing hashes', () => {
+  const md = '### Sectionize ##';
+  const received = stringify(md, { partial: true });
+  const expected = `
+<section class="level3" aria-labelledby="sectionize">
+  <h3 id="sectionize">Sectionize</h3>
+</section>
+`;
+  expect(received).toBe(expected);
+});
+
 it('<h7> is not heading', () => {
   const md = '####### こんにちは {.test}';
   const received = stringify(md, { partial: true, disableFormatHtml: true });
@@ -160,6 +180,110 @@ it('Sample', () => {
       <h1 id="not-sectionize">Not Sectionize</h1>
     </blockquote>
   </section>
+</section>
+`;
+  expect(received).toBe(expected);
+});
+
+it('HTML block with headings', () => {
+  const md = `# Heading 1
+
+## Heading 2-1
+
+<aside class="note">
+
+### NOTE
+
+This is a note.
+
+</aside>
+
+## Heading 2-2`;
+  const received = stringify(md, { partial: true });
+  const expected = `
+<section class="level1" aria-labelledby="heading-1">
+  <h1 id="heading-1">Heading 1</h1>
+  <section class="level2" aria-labelledby="heading-2-1">
+    <h2 id="heading-2-1">Heading 2-1</h2>
+    <aside class="note">
+      <section class="level3" aria-labelledby="note">
+        <h3 id="note">NOTE</h3>
+        <p>This is a note.</p>
+      </section>
+    </aside>
+  </section>
+  <section class="level2" aria-labelledby="heading-2-2">
+    <h2 id="heading-2-2">Heading 2-2</h2>
+  </section>
+</section>
+`;
+  expect(received).toBe(expected);
+});
+
+it('Section-end marks', () => {
+  const md = `# Heading 1
+
+Depth 1
+
+## Heading 2
+
+Depth 2
+
+### Heading 3
+
+Depth 3
+
+#### Heading 4
+
+Depth 4
+
+##### Heading 5
+
+Depth 5
+
+###### Heading 6
+
+Depth 6
+
+######
+
+Depth 5 again
+
+####
+
+Depth 3 again
+
+##
+
+Depth 1 again`;
+  const received = stringify(md, { partial: true });
+  const expected = `
+<section class="level1" aria-labelledby="heading-1">
+  <h1 id="heading-1">Heading 1</h1>
+  <p>Depth 1</p>
+  <section class="level2" aria-labelledby="heading-2">
+    <h2 id="heading-2">Heading 2</h2>
+    <p>Depth 2</p>
+    <section class="level3" aria-labelledby="heading-3">
+      <h3 id="heading-3">Heading 3</h3>
+      <p>Depth 3</p>
+      <section class="level4" aria-labelledby="heading-4">
+        <h4 id="heading-4">Heading 4</h4>
+        <p>Depth 4</p>
+        <section class="level5" aria-labelledby="heading-5">
+          <h5 id="heading-5">Heading 5</h5>
+          <p>Depth 5</p>
+          <section class="level6" aria-labelledby="heading-6">
+            <h6 id="heading-6">Heading 6</h6>
+            <p>Depth 6</p>
+          </section>
+          <p>Depth 5 again</p>
+        </section>
+      </section>
+      <p>Depth 3 again</p>
+    </section>
+  </section>
+  <p>Depth 1 again</p>
 </section>
 `;
   expect(received).toBe(expected);

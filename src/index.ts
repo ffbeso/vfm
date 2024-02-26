@@ -116,7 +116,7 @@ export function VFM(
 
   const processor = unified()
     .use(markdown(hardLineBreaks, math))
-    .data('settings', { position: false })
+    .data('settings', { position: true })
     .use(html);
 
   if (replace) {
